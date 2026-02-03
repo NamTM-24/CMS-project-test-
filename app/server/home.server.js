@@ -9,6 +9,8 @@ export async function loader() {
     return data;
 }
 
-
+export async function action() {
+    
+}
 
 // action

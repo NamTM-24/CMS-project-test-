@@ -1,35 +1,9 @@
-// app/routes/home.jsx
+import Sidebar from "../component/sidebar";
+import Preview from "../component/preview";
+import Inspector from "../component/inspector";
+import { sections } from "../test_data/mockData";
+import { useState } from "react";
 
-import { Form, useLoaderData } from "react-router";
-
-/* ============================
-   LOADER = GET
-   ============================ */
-export async function loader({ request }) {
-  console.log("Loader chạy!");
-
-  let users = ["Nam", "An", "Bình"];
-
-  return users;
-}
-
-/* ============================
-   ACTION = POST
-   ============================ */
-export async function action({ request }) {
-  console.log("Action chạy!");
-
-  let formData = await request.formData();
-  let name = formData.get("name");
-
-  console.log("Tên user submit:", name);
-
-  return { success: true };
-}
-
-/* ============================
-   META
-   ============================ */
 export function meta() {
   return [
     { title: "Mini Page Builder" },
@@ -37,51 +11,68 @@ export function meta() {
   ];
 }
 
-/* ============================
-   UI COMPONENT
-   ============================ */
 export default function Home() {
-  let data = useLoaderData();
+  const [sectionsState, setSectionsState] = useState(sections);
+  const [activeSection, setActiveSection] = useState(null);
+
+  const handleSelectSection = (section) => {
+    setActiveSection(section);
+  };
+
+  const handleUpdateSection = (sectionId, newSettings) => {
+    setSectionsState((prev) => {
+      return prev.map((section) => {
+        if (section.id === sectionId) {
+          return {
+            ...section,
+            settings: {
+              ...section.settings,
+              ...newSettings
+            },
+          };
+        } else {
+          return section;
+        }
+      });
+    });
+
+    if (activeSection && activeSection.id === sectionId) {
+      setActiveSection((prev) => {
+        return {
+          ...prev,
+          settings: {
+            ...prev.settings,
+            ...newSettings,
+          },
+        };
+      });
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex justify-center items-center p-6">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-6 space-y-6">
-        
-        {/* Title */}
-        <h1 className="text-2xl font-bold text-gray-800 text-center">
-          Danh sách Users
-        </h1>
-
-        {/* User List */}
-        <ul className="space-y-2">
-          {data.map(function (user) {
-            return (
-              <li
-                key={user}
-                className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-gray-700"
-              >
-                {user}
-              </li>
-            );
-          })}
-        </ul>
-
-        {/* Form */}
-        <Form method="post" className="space-y-3">
-          <input
-            name="name"
-            placeholder="Nhập tên..."
-            className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-          />
-
-          <button
-            type="submit"
-            className="w-full bg-blue-500 text-white font-semibold py-3 rounded-lg hover:bg-blue-600 transition"
-          >
-            Add User
-          </button>
-        </Form>
-      </div>
+    <div className="flex flex-col h-screen w-full">
+      {/* Top Header Bar */}
+      <header className="flex items-center justify-end px-4 py-2 border-b border-gray-200 bg-white">
+        <button className="px-4 py-2 text-sm text-white bg-black hover:bg-gray-800 rounded-md font-medium cursor-pointer">
+          Save
+        </button>
+      </header>
+      <section className="flex flex-1 overflow-hidden">
+        <Sidebar
+          sections={sectionsState}
+          activeSection={activeSection}
+          onSelectSection={handleSelectSection}
+        />
+        <Preview
+          sections={sectionsState}
+          activeSection={activeSection}
+          onSelectSection={handleSelectSection}
+        />
+        <Inspector 
+          activeSection={activeSection} 
+          onUpdate={handleUpdateSection} 
+        />
+      </section>
     </div>
   );
 }
