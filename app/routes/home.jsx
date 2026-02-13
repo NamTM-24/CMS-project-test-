@@ -3,6 +3,8 @@ import Preview from "../component/preview";
 import Inspector from "../component/inspector";
 import { sections } from "../test_data/mockData";
 import { useState } from "react";
+import { getSchema } from "../utils/componentRegistry";
+import { getDefaultsFromSchema } from "../utils/handleDefaultValue";
 
 export function meta() {
   return [
@@ -19,15 +21,15 @@ export default function Home() {
     setActiveSection(section);
   };
 
-  const handleUpdateSection = (sectionId, newSettings) => {
+  const handleUpdateSection = (sectionId, newData) => {
     setSectionsState((prev) => {
       return prev.map((section) => {
         if (section.id === sectionId) {
           return {
             ...section,
-            settings: {
-              ...section.settings,
-              ...newSettings
+            data: {
+              ...section.data,
+              ...newData
             },
           };
         } else {
@@ -40,20 +42,42 @@ export default function Home() {
       setActiveSection((prev) => {
         return {
           ...prev,
-          settings: {
-            ...prev.settings,
-            ...newSettings,
+          data: {
+            ...prev.data,
+            ...newData,
           },
         };
       });
     }
   };
 
+  // handleAddSection
+  const handleAddSection = (type) => {
+    const schema = getSchema(type);
+
+    const defaults = getDefaultsFromSchema(schema);
+
+    const newSection = {
+      id: Date.now(),
+      type: type,
+      title: schema.title,
+      data: defaults
+    };
+
+    setSectionsState([...sectionsState , newSection]);
+
+    setActiveSection(newSection);
+    
+  }
+
   return (
     <div className="flex flex-col h-screen w-full">
       {/* Top Header Bar */}
       <header className="flex items-center justify-end px-4 py-2 border-b border-gray-200 bg-white">
-        <button className="px-4 py-2 text-sm text-white bg-black hover:bg-gray-800 rounded-md font-medium cursor-pointer">
+        <input type="hidden" name="sections" value={JSON.stringify()} />
+        <button 
+        type="submit"
+        className="px-4 py-2 text-sm text-white bg-black hover:bg-gray-800 rounded-md font-medium cursor-pointer">
           Save
         </button>
       </header>
@@ -62,6 +86,7 @@ export default function Home() {
           sections={sectionsState}
           activeSection={activeSection}
           onSelectSection={handleSelectSection}
+          onAddSection={handleAddSection}
         />
         <Preview
           sections={sectionsState}

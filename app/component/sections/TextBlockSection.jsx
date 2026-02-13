@@ -1,5 +1,7 @@
-export default function TextBlockSection({ settings }) {
-  const { heading, content, alignment } = settings;
+import { createSchema } from "../../utils/createSchema";
+
+export default function TextBlockSection({ data }) {
+  const { heading, content, alignment } = data;
 
   return (
     <div className="py-12 px-6" style={{ textAlign: alignment }}>
@@ -8,3 +10,27 @@ export default function TextBlockSection({ settings }) {
     </div>
   );
 }
+
+export const schema = createSchema({
+  type: "text-block",
+  title: "Text Block",
+  settings: [
+    {
+      group: "Content",
+      inputs: [
+        {
+          type: "text",
+          name: "heading",
+          label: "Heading",
+          defaultValue: "Text Block Heading"
+        },
+        {
+          type: "textarea",
+          name: "content",
+          label: "Content",
+          defaultValue: "Your content here..."
+        }
+      ]
+    }
+  ]
+});

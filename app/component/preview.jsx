@@ -1,4 +1,4 @@
-import { register } from "./sections/register";
+import { getComponent } from "../utils/componentRegistry";
 
 export default function Preview({ sections, activeSection, onSelectSection }) {
   return (
@@ -35,10 +35,10 @@ export default function Preview({ sections, activeSection, onSelectSection }) {
             </div>
           </div>
 
-          {/* Preview Content Area */}
+          {/* Preview */}
           <div className="flex-1 overflow-y-auto bg-white">
             {sections.map((section) => {
-              const Component = register[section.type];
+              const Component = getComponent(section.type);
               const isActive = activeSection?.id === section.id;
               return (
                 <div
@@ -46,7 +46,7 @@ export default function Preview({ sections, activeSection, onSelectSection }) {
                   onClick={() => onSelectSection(section)}
                   className={`cursor-pointer ${isActive ? "border-4 border-blue-500" : ""}`}
                 >
-                  <Component settings={section.settings} />
+                  <Component data={section.data} />
                 </div>
               );
             })}

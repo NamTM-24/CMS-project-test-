@@ -1,5 +1,5 @@
 // Mock Data - Đơn giản hóa từ UI templates
-// Chỉ có id, type, title, settings (không có children phức tạp)
+// Chỉ có id, type, title, data (không có children phức tạp)
 
 export const sections = [
   // 1. Sale Hero Banner 
@@ -7,7 +7,7 @@ export const sections = [
     id: "hero-1",
     type: "hero",
     title: "Sale Hero Banner",
-    settings: {
+    data: {
       heading: "Up to 50% Off Select Styles",
       subheading: "Black Friday Preview Sale",
       paragraph: "Early Access Starts Now",
@@ -23,7 +23,7 @@ export const sections = [
     id: "text-1",
     type: "text-block",
     title: "Brand Story",
-    settings: {
+    data: {
       heading: "Crafted with Care",
       content: "We believe in creating products that not only look good but feel good too.",
       alignment: "center"
@@ -35,7 +35,7 @@ export const sections = [
     id: "image-card-1",
     type: "image-card",
     title: "Featured Product",
-    settings: {
+    data: {
       image: "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=600",
       cardTitle: "Classic Sneakers",
       cardLink: "#"
@@ -47,7 +47,7 @@ export const sections = [
     id: "hero-2",
     type: "hero",
     title: "Holiday Collection",
-    settings: {
+    data: {
       heading: "The Holiday Collection",
       subheading: "Feel Good Gifting",
       paragraph: "Discover exclusive styles this season",
@@ -63,7 +63,7 @@ export const sections = [
     id: "text-2",
     type: "text-block",
     title: "New Arrivals",
-    settings: {
+    data: {
       heading: "Just Dropped",
       content: "Check out our latest products and seasonal favorites.",
       alignment: "left"

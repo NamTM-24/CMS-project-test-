@@ -1,6 +1,8 @@
-export default function HeroSection({ settings }) {
+import { createSchema } from "../../utils/createSchema";
+
+export default function HeroSection({ data }) {
   const { heading, subheading, paragraph, buttonText, backgroundImage } =
-    settings;
+    data;
 
   return (
     <div
@@ -19,3 +21,39 @@ export default function HeroSection({ settings }) {
     </div>
   );
 }
+
+export const schema = createSchema({
+  type: "hero",
+  title: "Hero Banner",
+  settings: [
+    {
+      group: "Content",
+      inputs: [
+        {
+          type: "text",
+          name: "heading",
+          label: "Heading",
+          defaultValue: "Welcome to Our Store"
+        },
+        {
+          type: "text",
+          name: "subheading",
+          label: "Subheading",
+          defaultValue: "New Collection"
+        },
+        {
+          type: "textarea",
+          name: "paragraph",
+          label: "Paragraph",
+          defaultValue: "Discover amazing products"
+        },
+        {
+          type: "text",
+          name: "buttonText",
+          label: "Button Text",
+          defaultValue: "Shop Now"
+        }
+      ]
+    }
+  ]
+});
