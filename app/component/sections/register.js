@@ -8,6 +8,6 @@ export const components = [
   HeroSectionModule,
   TextBlockSectionModule,
   ImageCardSectionModule,
-  TestSectionModule
+  TestSectionModule,
 ];
 

@@ -1,14 +1,67 @@
 import { useState } from "react";
 import { getAllSchemas } from "../utils/componentRegistry";
+import { DragDropProvider } from "@dnd-kit/react";
+import { isSortable, useSortable } from "@dnd-kit/react/sortable";
+
+function SortableItem({ section, index, isActive, onSelectSection, onDelete, showMenu, setShowMenu }) {
+  const { ref } = useSortable({ id: section.id, index });
+
+  // true nếu menu của chính section này đang mở
+  // So sánh showMenu (lưu section.id) với id của section này
+  const isMenuOpen = showMenu === section.id;
+
+  return (
+    <div
+      ref={ref}
+      className={`group flex items-center gap-2 px-2 py-2 rounded cursor-pointer relative
+        ${isActive ? "bg-blue-100" : "hover:bg-gray-100"}`}
+      onClick={() => {
+        onSelectSection(section);
+        setShowMenu(null); 
+      }}
+    >
+      <span className="text-gray-400">›</span>
+      <span className="text-base text-gray-700 flex-1">{section.title}</span>
+
+      <button
+        className="opacity-0 group-hover:opacity-100 px-1 text-gray-400 hover:text-gray-700"
+        onClick={(e) => {
+          e.stopPropagation();
+          setShowMenu(isMenuOpen ? null : section.id);
+        }}
+      >
+        •••
+      </button>
+
+      {isMenuOpen && (
+        <div className="absolute right-0 top-8 bg-white border border-gray-200 rounded shadow-lg z-10 w-36">
+          <button
+            className="flex items-center gap-2 w-full px-3 py-2 text-sm text-red-600 hover:bg-red-50"
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete(section.id);
+              setShowMenu(null);
+            }}
+          >
+             Delete
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function Sidebar({
   sections,
   activeSection,
   onSelectSection,
   onAddSection,
+  onReorder,
+  onDelete,  
 }) {
-  // State show modal add sections
+
   const [showModal, setShowModal] = useState(false);
+  const [showMenu, setShowMenu] = useState(null);
 
   const handleAddClick = () => {
     setShowModal(true);
@@ -29,23 +82,43 @@ export default function Sidebar({
       <div className="flex items-center justify-between gap-1 py-3 px-4 border-b border-gray-200">
         <span className="font-medium text-base">Home page</span>
       </div>
-      {sections &&
-        sections.map((section) => {
-          const isActive = activeSection?.id === section.id;
 
-          return (
-            <div
+      <DragDropProvider
+        onDragEnd={(event) => {
+          // user ấn ESC để huỷ -> ko lam j
+          if (event.canceled) {
+            return;
+          }
+
+          const { source } = event.operation; // Lấy thông tin sections vừa được move
+
+          if (isSortable(source)) {
+            // initialIndex: Vị trí BAN ĐẦU trước khi kéo
+            // index       : Vị trí SAU KHI thả
+            const { initialIndex, index } = source;
+
+            if (initialIndex !== index) {
+              onReorder(initialIndex, index);
+            }
+          }
+        }}
+      >
+        {sections &&
+          sections.map((section, index) => (
+            <SortableItem
               key={section.id}
-              className={`flex items-center gap-2 px-2 py-2 rounded cursor-pointer 
-                ${isActive ? "bg-blue-100" : "hover:bg-gray-100"}`}
-              onClick={() => onSelectSection(section)}
-            >
-              <span className="text-gray-400">›</span>
-              <span className="text-base text-gray-700">{section.title}</span>
-            </div>
-          );
-        })}
-      ;{/* Add Section Button */}
+              section={section}
+              index={index}
+              isActive={activeSection?.id === section.id}
+              onSelectSection={onSelectSection}
+              onDelete={onDelete}
+              showMenu={showMenu}       
+              setShowMenu={setShowMenu} 
+            />
+          ))}
+      </DragDropProvider>
+
+      {/* Add Section Button */}
       <div
         className="flex items-center gap-2 px-2 py-2 cursor-pointer hover:bg-gray-100 rounded"
         onClick={handleAddClick}
